@@ -1,4 +1,4 @@
-import { useState } from "react"
+// import { useState } from "react"
 import { InputCheckbox } from "../InputCheckbox"
 import { TransactionPaneComponent } from "./types"
 
@@ -7,7 +7,8 @@ export const TransactionPane: TransactionPaneComponent = ({
   loading,
   setTransactionApproval: consumerSetTransactionApproval,
 }) => {
-  const [approved, setApproved] = useState(transaction.approved)
+  // bug 7
+  // const [approved, setApproved] = useState(transaction.approved)
 
   return (
     <div className="RampPane">
@@ -20,15 +21,17 @@ export const TransactionPane: TransactionPaneComponent = ({
       </div>
       <InputCheckbox
         id={transaction.id}
-        checked={approved}
+        // bug 7
+        // checked={approved}
+        checked={transaction.approved}
         disabled={loading}
         onChange={async (newValue) => {
           await consumerSetTransactionApproval({
             transactionId: transaction.id,
             newValue,
           })
-
-          setApproved(newValue)
+          // bug7
+          // setApproved(newValue)
         }}
       />
     </div>

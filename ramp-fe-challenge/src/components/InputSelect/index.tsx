@@ -1,3 +1,4 @@
+// bug 1 position
 import Downshift from "downshift"
 import { useCallback, useState } from "react"
 import classNames from "classnames"
@@ -13,10 +14,10 @@ export function InputSelect<TItem>({
   loadingLabel,
 }: InputSelectProps<TItem>) {
   const [selectedValue, setSelectedValue] = useState<TItem | null>(defaultValue ?? null)
-  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
-    top: 0,
-    left: 0,
-  })
+  // const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
+  //   top: 0,
+  //   left: 0,
+  // })
 
   const onChange = useCallback<InputSelectOnChange<TItem>>(
     (selectedItem) => {
@@ -58,10 +59,12 @@ export function InputSelect<TItem>({
             <div className="RampBreak--xs" />
             <div
               className="RampInputSelect--input"
-              onClick={(event) => {
-                setDropdownPosition(getDropdownPosition(event.target))
-                toggleProps.onClick(event)
-              }}
+              // onClick={(event) => {
+              //   setDropdownPosition(getDropdownPosition(event.target))
+              //   toggleProps.onClick(event)
+              // }}
+              onClick={toggleProps.onClick}
+
             >
               {inputValue}
             </div>
@@ -71,7 +74,7 @@ export function InputSelect<TItem>({
                 "RampInputSelect--dropdown-container-opened": isOpen,
               })}
               {...getMenuProps()}
-              style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
+            // style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
             >
               {renderItems()}
             </div>
@@ -117,15 +120,15 @@ export function InputSelect<TItem>({
   )
 }
 
-const getDropdownPosition: GetDropdownPositionFn = (target) => {
-  if (target instanceof Element) {
-    const { top, left } = target.getBoundingClientRect()
-    const { scrollY } = window
-    return {
-      top: scrollY + top + 63,
-      left,
-    }
-  }
+// const getDropdownPosition: GetDropdownPositionFn = (target) => {
+//   if (target instanceof Element) {
+//     const { top, left } = target.getBoundingClientRect()
+//     const { scrollY } = window
+//     return {
+//       top: scrollY + top + 63,
+//       left,
+//     }
+//   }
 
-  return { top: 0, left: 0 }
-}
+//   return { top: 0, left: 0 }
+// }

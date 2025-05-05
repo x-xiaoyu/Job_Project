@@ -12,7 +12,8 @@ export function App() {
   const { data: employees, ...employeeUtils } = useEmployees()
   const { data: paginatedTransactions, ...paginatedTransactionsUtils } = usePaginatedTransactions()
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
-  const [isLoading, setIsLoading] = useState(false)
+  // bug 5
+  // const [isLoading, setIsLoading] = useState(false)
 
   const transactions = useMemo(
     () => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
@@ -20,13 +21,13 @@ export function App() {
   )
 
   const loadAllTransactions = useCallback(async () => {
-    setIsLoading(true)
+    // setIsLoading(true) bug 5
     transactionsByEmployeeUtils.invalidateData()
 
     await employeeUtils.fetchAll()
     await paginatedTransactionsUtils.fetchAll()
 
-    setIsLoading(false)
+    // setIsLoading(false) bug 5
   }, [employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils])
 
   const loadTransactionsByEmployee = useCallback(
@@ -51,7 +52,8 @@ export function App() {
         <hr className="RampBreak--l" />
 
         <InputSelect<Employee>
-          isLoading={isLoading}
+          // isLoading={isLoading} bug 5
+          isLoading={employeeUtils.loading}
           defaultValue={EMPTY_EMPLOYEE}
           items={employees === null ? [] : [EMPTY_EMPLOYEE, ...employees]}
           label="Filter by employee"
@@ -65,16 +67,42 @@ export function App() {
               return
             }
 
-            await loadTransactionsByEmployee(newValue.id)
+            // bug 3 console: Employee id cannot be empty
+            if (newValue.id === EMPTY_EMPLOYEE.id) {
+              await loadAllTransactions()
+            } else {
+              await loadTransactionsByEmployee(newValue.id)
+            }
           }}
         />
 
         <div className="RampBreak--l" />
 
         <div className="RampGrid">
-          <Transactions transactions={transactions} />
+          <Transactions
+            transactions={transactions}
+            onTransactionChange={({ transactionId, newValue }) => {
+              if (transactions) {
+                const updated = transactions.map(t =>
+                  t.id === transactionId ? { ...t, approved: newValue } : t
+                )
 
-          {transactions !== null && (
+                if (paginatedTransactions?.data)
+                  paginatedTransactions.data = updated
+
+                if (transactionsByEmployee) {
+                  const idx = transactionsByEmployee.findIndex(
+                    t => t.id === transactionId
+                  )
+                  if (idx !== -1)
+                    transactionsByEmployee[idx].approved = newValue
+                }
+              }
+            }}
+          />
+
+          {/* {transactions !== null && ( bug 6 */}
+          {paginatedTransactions !== null && paginatedTransactions.nextPage !== null && (
             <button
               className="RampButton"
               disabled={paginatedTransactionsUtils.loading}

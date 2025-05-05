@@ -21,8 +21,13 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult {
       if (response === null || previousResponse === null) {
         return response
       }
+      // bug 4 replace initial transactions
+      // return { data: response.data, nextPage: response.nextPage }
+      return {
+        data: [...previousResponse.data, ...response.data],
+        nextPage: response.nextPage,
+      }
 
-      return { data: response.data, nextPage: response.nextPage }
     })
   }, [fetchWithCache, paginatedTransactions])
 
